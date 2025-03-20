@@ -1,8 +1,9 @@
 TODO:
-- [ ] add input (w trakcie) 
+- [x] add arg parsing
+- [ ] add file parsing
 - [ ] add output 
 - [ ] add error handling
-- [ ] add tests (w trakcie)
+- [x] add tests 
 - [ ] add main
 - [ ] add partitioning graph algorithm 
 
