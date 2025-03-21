@@ -59,3 +59,63 @@ int parse_args(int argc, char** argv, char **input_file, char **output_file, int
     }
     return 0;
 }
+
+void read_file(char* filename, int* max_count, char* indexes, char* first_nodes_indexes, char* groups, char* first_group_indexes){
+    FILE* file = fopen(filename,"r");
+    if( file == NULL) {
+        perror("Błąd: Nie udało się otworzyć podanego pliku ");
+        abort();
+    }
+    char line_buffer[1024];
+    int line_index = 0;
+
+    while (fgets(line_buffer, sizeof(line_buffer), file))
+    {
+        
+        switch (line_index)
+        {
+            case 0:
+            *max_count = atoi(line_buffer);
+            break;
+            case 1:
+            memcpy(indexes,line_buffer,sizeof(line_buffer));
+            
+            break;
+            case 2:
+            memcpy(first_nodes_indexes,line_buffer,sizeof(line_buffer));
+            
+            break;
+            case 3:
+            memcpy(groups,line_buffer,sizeof(line_buffer));
+          
+            break;
+            case 4:
+            memcpy(first_group_indexes,line_buffer,sizeof(line_buffer));
+          
+            break;
+        }
+        line_index++;
+    }
+
+    fclose(file);
+
+}
+
+
+void buffer_to_int_array (char* src, int* dest ,int size, int* copied_count){
+    char* t = src;
+    int index = 0;
+    while(*t){
+        
+        if(isdigit(*t)){
+            int n = strtol(t,&t,10);
+            dest[index] = n;
+            index++;
+        }
+        else{
+            t++;
+        }
+        if(index >= size) break;
+    }
+    *copied_count = index;
+}
