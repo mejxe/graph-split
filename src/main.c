@@ -12,7 +12,7 @@ int main(int argc, char** argv){
     char* groups_buffer = malloc(BUFFER_SIZE );
     char* first_group_indexes_buffer = malloc(BUFFER_SIZE );
     read_file("graf.csrrg",&max_count,indexes_buffer,first_nodes_indexes_buffer,groups_buffer,first_group_indexes_buffer);
-   
+    
 
 
     int* indexes = malloc(sizeof(int) * BUFFER_SIZE);
@@ -30,6 +30,17 @@ int main(int argc, char** argv){
     buffer_to_int_array(groups_buffer,groups,BUFFER_SIZE,&groups_count);
     buffer_to_int_array(first_group_indexes_buffer,first_group_indexes,BUFFER_SIZE,&first_group_indexes_count);
     
+
+    free(indexes_buffer);
+    free(first_group_indexes);
+    free(groups_buffer);
+    free(first_group_indexes_buffer);
+    
+
+
+
+
+
 
     for(int i =0; i < indexes_count; i++){
         printf("%d ", indexes[i]);
