@@ -4,7 +4,6 @@
 #include <string.h>
 #include <ctype.h>
 #include "graph.h"
-
 // informacje o programie
 void help();
 

@@ -1,5 +1,4 @@
 #include "graph.h"
-
 // Struktura kubełkowa dla FM (dla możliwie najszybszego dostępu do elementów)
 typedef struct {
     int max_gain;       // Maksymalny możliwy zysk

@@ -1,35 +1,88 @@
 #include "graph.h"
 #include <stdio.h>
 #include <stdlib.h>
-Graph* create_graph(int max_count, int* indexes, int* first_nodes_indexes, int* groups, int* first_group_indexes, int first_node_indexes_count) {
-    Graph* graf = malloc(sizeof(*graf));
-    graf->max_width = max_count;
-    GraphNode **matrix = malloc(sizeof(GraphNode*)*(first_node_indexes_count));
-    int k = 0;
-    for (int i = 0; i < first_node_indexes_count; i++) {
-        GraphNode *row = (GraphNode*) malloc(sizeof(GraphNode)*max_count);
-        for (int j = 0; j < max_count; j++) {
-            GraphNode node;
-            node.node = -1;
-            if (j == indexes[k]) {
-                node.node = k;
-                k++;
-            }
-            row[j] = node;
 
-        }
-        matrix[i] = row;
+// Funkcja tworząca nowy graf
+Graph* create_graph(int num_vertices) {
+    Graph* graph = (Graph*)malloc(sizeof(Graph));
+    graph->num_vertices = num_vertices;
+    graph->num_edges = 0;
+    graph->adj_lists = (Node**)malloc(num_vertices * sizeof(Node*));
+    
+    for (int i = 0; i < num_vertices; i++) {
+        graph->adj_lists[i] = NULL;
     }
-    graf->graph_array = matrix;
-            
-    return graf;
+    
+    return graph;
 }
-void display_graph(Graph* graph, int size_x, int size_y) {
-    for (int i = 0; i<size_y; i++) {
-        for (int j = 0; j<size_x; j++) {
-        printf("%d ",graph->graph_array[i][j].node);
+
+// Funkcja dodająca krawędź do grafu
+void add_edge(Graph* graph, int src, int dest) {
+    // Dodaj krawędź od src do dest
+    Node* new_node = (Node*)malloc(sizeof(Node));
+    new_node->vertex = dest;
+    new_node->next = graph->adj_lists[src];
+    graph->adj_lists[src] = new_node;
+    
+    // Dodaj krawędź od dest do src (graf nieskierowany)
+    new_node = (Node*)malloc(sizeof(Node));
+    new_node->vertex = src;
+    new_node->next = graph->adj_lists[dest];
+    graph->adj_lists[dest] = new_node;
+    
+    graph->num_edges++;
+}
+// Funkcja wyświetlająca graf w formie list sąsiedztwa
+void print_graph(Graph* graph) {
+    printf("\n=== STRUKTURA GRAFU ===\n");
+    printf("Liczba wierzchołków: %d\n", graph->num_vertices);
+    printf("Liczba krawędzi: %d\n\n", graph->num_edges);
+    
+    for (int i = 0; i < graph->num_vertices; i++) {
+        printf("Wierzchołek %d: ", i);
+        Node* temp = graph->adj_lists[i];
+        while (temp) {
+            printf("%d -> ", temp->vertex);
+            temp = temp->next;
+        }
+        printf("NULL\n");
+    }
+    printf("\n");
+}
+
+// Funkcja wyświetlająca podział grafu na partycje
+void print_partition(int* partition, int num_vertices, int num_partitions) {
+    printf("\n=== PODZIAŁ GRAFU NA PARTYCJE ===\n");
+    
+    for (int i = 0; i < num_partitions; i++) {
+        printf("Partycja %d: ", i);
+        for (int j = 0; j < num_vertices; j++) {
+            if (partition[j] == i) {
+                printf("%d ", j);
+            }
         }
         printf("\n");
     }
+    printf("\n");
+}
+
+// Funkcja wyświetlająca przecięte krawędzie
+void print_cut_edges(Graph* graph, int* partition) {
+    printf("=== PRZECIĘTE KRAWĘDZIE ===\n");
+    int cut_count = 0;
+    
+    for (int i = 0; i < graph->num_vertices; i++) {
+        Node* temp = graph->adj_lists[i];
+        while (temp) {
+            if (temp->vertex > i && partition[i] != partition[temp->vertex]) {
+                printf("Krawędź (%d, %d) - między partycjami %d i %d\n", 
+                       i, temp->vertex, partition[i], partition[temp->vertex]);
+                cut_count++;
+            }
+            temp = temp->next;
+        }
+    }
+    
+    printf("\nLiczba przeciętych krawędzi: %d\n\n", cut_count);
 }
 
