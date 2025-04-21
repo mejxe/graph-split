@@ -1,4 +1,7 @@
 #include "io.h"
+
+
+
 void help() {
     printf("Narzędzie służące do dzielenia grafu na n części.\n");
     printf("---------------------------------------------------");
@@ -65,10 +68,17 @@ void read_file(char* filename, int* max_count, char* indexes, char* first_nodes_
         perror("Błąd: Nie udało się otworzyć podanego pliku ");
         abort();
     }
-    char line_buffer[1024];
+    //char line_buffer[1024*65];
+    char* line_buffer = malloc(LINE_BUFFER_SIZE);
+
+    if(!line_buffer){
+        perror("Błąd alokacji przy czytaniu pliku");
+        abort();
+    }
+    
     int line_index = 0;
 
-    while (fgets(line_buffer, sizeof(line_buffer), file))
+    while (fgets(line_buffer,LINE_BUFFER_SIZE, file))
     {
         
         switch (line_index)
@@ -77,25 +87,29 @@ void read_file(char* filename, int* max_count, char* indexes, char* first_nodes_
             *max_count = atoi(line_buffer);
             break;
             case 1:
-            memcpy(indexes,line_buffer,sizeof(line_buffer));
+            strcpy(indexes,line_buffer);
+            //memcpy(indexes,line_buffer,LINE_BUFFER_SIZE);
             
             break;
             case 2:
-            memcpy(first_nodes_indexes,line_buffer,sizeof(line_buffer));
+            strcpy(first_nodes_indexes,line_buffer);
+            //memcpy(first_nodes_indexes,line_buffer,LINE_BUFFER_SIZE);
             
             break;
             case 3:
-            memcpy(groups,line_buffer,sizeof(line_buffer));
+            strcpy(groups,line_buffer);
+           // memcpy(groups,line_buffer,LINE_BUFFER_SIZE);
           
             break;
             case 4:
-            memcpy(first_group_indexes,line_buffer,sizeof(line_buffer));
+            strcpy(first_group_indexes,line_buffer);
+           // memcpy(first_group_indexes,line_buffer,LINE_BUFFER_SIZE);
           
             break;
         }
         line_index++;
     }
-
+    free(line_buffer);
     fclose(file);
 
 }
