@@ -1,12 +1,12 @@
 #include "graph.h"
 #include "io.h"
 #include <stdio.h>
-void add_edge_int(Graph* g, int a, int b) {
-    char str1[20];
-    char str2[20];
-    sprintf(str1, "%d", a);
-    sprintf(str2, "%d", b);
-    add_edge(g, str1, str2);
+void add_edge_int(Graph *g, int a, int b) {
+  char str1[20];
+  char str2[20];
+  sprintf(str1, "%d", a);
+  sprintf(str2, "%d", b);
+  add_edge(g, str1, str2);
 }
 
 int main(int argc, char **argv) {
@@ -16,7 +16,7 @@ int main(int argc, char **argv) {
   char *first_nodes_indexes_buffer = malloc(LINE_BUFFER_SIZE);
   char *groups_buffer = malloc(LINE_BUFFER_SIZE);
   char *first_group_indexes_buffer = malloc(LINE_BUFFER_SIZE);
-  read_file("graf1.csrrg", &max_count, indexes_buffer,
+  read_file("graf.csrrg", &max_count, indexes_buffer,
             first_nodes_indexes_buffer, groups_buffer,
             first_group_indexes_buffer);
 
@@ -39,32 +39,38 @@ int main(int argc, char **argv) {
                       LINE_BUFFER_SIZE, &first_group_indexes_count);
 
   Graph *g = create_graph();
-  for (int i = 0; i + 1 < first_nodes_indexes_count; i++) {
+  for (int i = 0; i < first_group_indexes_count; i++) {
     int start = first_group_indexes[i];
-    int j = start+1;
-    int stop = first_group_indexes[i + 1];
+    int j = start + 1;
+    int stop;
+    if (i + 1 >= first_group_indexes_count) {
+      stop = groups_count;
+    } else {
+      stop = first_group_indexes[i + 1];
+    }
     while (j < stop) {
       add_edge_int(g, groups[start], groups[j]);
-      printf("%d -> %d ||", groups[start], groups[j]);
+      printf("%d -> %d || ", groups[start], groups[j]);
       j++;
     }
     printf("\n\n");
   }
-      fm_algorithm(g);
-    
-    printf("Final partition:\n");
-    for (int i = 0; i < g->vertex_count; i++) {
-        printf("%s: %s\n", g->vertices[i]->name, g->partition[i] ? "Right" : "Left");
-    }
-    
-    free_graph(g);
-    return 0;
+  //      fm_algorithm(g);
+  //
+  //    printf("Final partition:\n");
+  //    for (int i = 0; i < g->vertex_count; i++) {
+  //        printf("%s: %s\n", g->vertices[i]->name, g->partition[i] ? "Right" :
+  //        "Left");
+  //    }
+  //
+  //    free_graph(g);
+  return 0;
 
- // printf("first group index count: %d\n", first_group_indexes_count);
- // printf("index count: %d\n", indexes_count);
- // printf("first nodes index count: %d\n", first_nodes_indexes_count);
- // printf(" group  count: %d\n", groups_count);
- // printf(" max  count: %d\n", max_count);
+  // printf("first group index count: %d\n", first_group_indexes_count);
+  // printf("index count: %d\n", indexes_count);
+  // printf("first nodes index count: %d\n", first_nodes_indexes_count);
+  // printf(" group  count: %d\n", groups_count);
+  // printf(" max  count: %d\n", max_count);
 
   printf("\n");
 }
