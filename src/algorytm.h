@@ -33,3 +33,5 @@ int get_max_gain_vertex(BucketStructure* bs);
 
 // główna implementacja algorytmu
 Graph* fm_partition(Graph* graf, int parts, int margin);
+void fm_algorithm(Graph *graph, int num_partitions, int max_passes);
+

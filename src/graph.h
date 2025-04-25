@@ -1,42 +1,49 @@
 #ifndef GRAPH_H
 #define GRAPH_H
-// Struktura reprezentująca węzeł w liście sąsiedztwa
-typedef struct Node {
-    int vertex;
-    struct Node* next;
-} Node;
 
-// Struktura reprezentująca graf
-typedef struct {
-    int num_vertices;
-    int num_edges;
-    Node** adj_lists; // lista sąsiedztwa potrzebna ze względu na rzadkość grafu
-} Graph;
+#include <stdbool.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+#include <time.h>
+#include <stdio.h>
+#include "ds.h"
 
-// Struktura używana do reprezentowania wierzchołka w algorytmie FM
-typedef struct {
-    int id;
-    int gain;
-    int partition;
-    int locked; // 0/1
-} Vertex;
+// Forward declarations
 
+// Vertex functions
+Vertex* create_vertex(const char* name);
+void free_vertex(Vertex* v);
+void add_neighbor(Vertex* v, Vertex* neighbor);
+bool is_neighbor(Vertex* v, Vertex* u);
 
-// funkcja inicjujaca graf
-Graph* create_graph(int num_vertices);
+// Graph functions
+Graph* create_graph();
+void free_graph(Graph* g);
+Vertex* find_vertex(Graph* g, const char* name);
+Vertex* add_vertex_to_graph(Graph* g, const char* name);
+void add_edge(Graph* g, const char* name1, const char* name2);
+void calculate_max_degree(Graph* g);
 
-// pomocnicza funkcja dodajaca połaczenia między węzłami
-void add_edge(Graph* graph, int src, int dest);
+// Bucket functions
+void initialize_buckets(Graph* g);
+void add_to_bucket(Vertex*** buckets, Vertex* v, int gain, int max_degree, int* max_gain_idx);
+void initialize_bucket_sort(Graph* g, int vertex_idx, int gain, bool side);
+void remove_from_bucket(Vertex*** buckets, Vertex* v, int gain, int max_degree);
+void increment_gain(Graph* g, Vertex*** buckets, Vertex* v, bool side, int* max_gain_idx);
+void decrement_gain(Graph* g, Vertex*** buckets, Vertex* v, bool side, int* max_gain_idx);
 
-// printowanie graphu na potrzeby debuggowania
-void display_graph(Graph* graph, int size_x, int size_y);
+// Partition functions
+void initialize_partition(Graph* g);
+void randomize_partition(Graph* g);
+int calculate_cost(Graph* g, bool* partition);
+void initialize_gains(Graph* g);
 
-// Funkcja zwalniająca pamięć zajmowaną przez graf
-void free_graph(Graph* graph);
- 
-void print_cut_edges(Graph* graph, int* partition);
+// FM algorithm functions
+void update_gains(Graph* g, bool* partition, bool* locked, int moved_idx);
+int find_max_gain_vertex(Graph* g, bool* locked);
+bool fm_pass(Graph* g, bool* partition, int* cost);
+void fm_algorithm(Graph* g);
 
-void print_partition(int* partition, int num_vertices, int num_partitions);
+#endif /* GRAPH_H */
 
-void print_graph(Graph* graph);
-#endif

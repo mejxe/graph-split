@@ -1,0 +1,243 @@
+#include "algorytm.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
+#include <stdbool.h>
+#include <string.h>
+BucketStructure* initialize_buckets(int num_vertices, int max_possible_gain) {
+    BucketStructure* bs = (BucketStructure*)malloc(sizeof(BucketStructure));
+    
+    // Oblicz rzeczywisty zakres na podstawie maksymalnego możliwego zysku
+    bs->min_gain = -max_possible_gain;
+    bs->max_gain = max_possible_gain;
+    int range = bs->max_gain - bs->min_gain + 1;
+    
+    bs->bucket_sizes = (int*)calloc(range, sizeof(int));
+    bs->buckets = (int**)malloc(range * sizeof(int*));
+    
+    for (int i = 0; i < range; i++) {
+        bs->buckets[i] = (int*)malloc(num_vertices * sizeof(int));
+        bs->bucket_sizes[i] = 0;
+    }
+    
+    bs->vertex_bucket = (int*)malloc(num_vertices * sizeof(int));
+    memset(bs->vertex_bucket, -1, num_vertices * sizeof(int)); // Inicjalizacja na -1
+    
+    return bs;
+}
+
+// Zmodyfikowana funkcja dodawania do kubełka z walidacją indeksu
+void add_to_bucket(BucketStructure* bs, int vertex, int gain) {
+    // Ogranicz zysk do dopuszczalnego zakresu
+    if (gain < bs->min_gain) gain = bs->min_gain;
+    if (gain > bs->max_gain) gain = bs->max_gain;
+    
+    int bucket_index = gain - bs->min_gain;
+    
+    // Sprawdź poprawność indeksu
+    if (bucket_index < 0 || bucket_index >= (bs->max_gain - bs->min_gain + 1)) {
+        fprintf(stderr, "Błąd: Nieprawidłowy indeks kubełka %d dla zysku %d\n", bucket_index, gain);
+        return;
+    }
+    
+    // Sprawdź czy wierzchołek nie jest już w kubełku
+    if (bs->vertex_bucket[vertex] != -1) {
+        remove_from_bucket(bs, vertex, gain);
+    }
+    
+    bs->buckets[bucket_index][bs->bucket_sizes[bucket_index]] = vertex;
+    bs->vertex_bucket[vertex] = bucket_index;
+    bs->bucket_sizes[bucket_index]++;
+}
+
+// Ulepszone usuwanie z kubełka
+void remove_from_bucket(BucketStructure* bs, int vertex, int gain) {
+    int bucket_index = bs->vertex_bucket[vertex];
+    
+    if (bucket_index == -1) return;
+    
+    // Sprawdź zgodność z podanym zyskiem
+    int expected_gain = bucket_index + bs->min_gain;
+    if (expected_gain != gain) {
+        fprintf(stderr, "Błąd spójności: Rzeczywisty zysk %d ≠ oczekiwany %d\n", gain, expected_gain);
+        return;
+    }
+    
+    for (int i = 0; i < bs->bucket_sizes[bucket_index]; i++) {
+        if (bs->buckets[bucket_index][i] == vertex) {
+            // Zamień z ostatnim elementem
+            bs->buckets[bucket_index][i] = bs->buckets[bucket_index][bs->bucket_sizes[bucket_index]-1];
+            bs->bucket_sizes[bucket_index]--;
+            bs->vertex_bucket[vertex] = -1;
+            break;
+        }
+    }
+}
+
+// Poprawione obliczanie maksymalnego możliwego zysku
+int calculate_max_possible_gain(Graph* graph) {
+    int max_gain = 0;
+    for (int i = 0; i < graph->num_vertices; i++) {
+        Node* temp = graph->adj_lists[i];
+        int degree = 0;
+        while (temp) {
+            degree++;
+            temp = temp->next;
+        }
+        if (degree > max_gain) max_gain = degree;
+    }
+    return max_gain * 2; // Uwzględniamy ujemne zyski
+}
+
+int get_max_gain_vertex(BucketStructure* bs) {
+    for (int gain = bs->max_gain; gain >= bs->min_gain; gain--) {
+        int bucket_index = gain;
+        if (bs->bucket_sizes[bucket_index] > 0) {
+            return bs->buckets[bucket_index][0];
+        }
+    }
+    return -1;
+}
+
+int calculate_initial_gain(Graph* graph, Vertex* vertices, int v) {
+    int gain = 0;
+    Node* temp = graph->adj_lists[v];
+    while (temp) {
+        if (vertices[v].partition != vertices[temp->vertex].partition) {
+            gain++;
+        } else {
+            gain--;
+        }
+        temp = temp->next;
+    }
+    return gain;
+}
+
+void update_vertex_gain(Graph* graph, Vertex* vertices, BucketStructure* bs, int v) {
+    int old_gain = vertices[v].gain;
+    int new_gain = calculate_initial_gain(graph, vertices, v);
+    
+    if (old_gain != new_gain) {
+        remove_from_bucket(bs, v, old_gain);
+        vertices[v].gain = new_gain;
+        add_to_bucket(bs, v, new_gain);
+    }
+}
+
+void update_neighbor_gains(Graph* graph, Vertex* vertices, BucketStructure* bs, int v) {
+    Node* temp = graph->adj_lists[v];
+    while (temp) {
+        if (!vertices[temp->vertex].locked) {
+            update_vertex_gain(graph, vertices, bs, temp->vertex);
+        }
+        temp = temp->next;
+    }
+}
+
+void fm_algorithm(Graph* graph, int num_partitions, int max_passes) {
+    Vertex* vertices = (Vertex*)malloc(graph->num_vertices * sizeof(Vertex));
+    int* best_partition = (int*)malloc(graph->num_vertices * sizeof(int));
+    int best_cut = INT_MAX;
+
+    // Inicjalizacja wierzchołków
+    for (int i = 0; i < graph->num_vertices; i++) {
+        vertices[i].id = i;
+        vertices[i].partition = i % num_partitions;
+        vertices[i].locked = false;
+    }
+
+    // Oblicz maksymalny stopień
+    int max_degree = 0;
+    for (int i = 0; i < graph->num_vertices; i++) {
+        int degree = 0;
+        Node* temp = graph->adj_lists[i];
+        while (temp) {
+            degree++;
+            temp = temp->next;
+        }
+        if (degree > max_degree) max_degree = degree;
+    }
+
+    for (int pass = 0; pass < max_passes; pass++) {
+        // Inicjalizacja kubełków dla nowej iteracji
+
+    int max_possible_gain = calculate_max_possible_gain(graph);
+    BucketStructure* bs = initialize_buckets(graph->num_vertices, max_possible_gain);
+        
+        // Oblicz początkowe zyski
+        for (int i = 0; i < graph->num_vertices; i++) {
+            vertices[i].gain = calculate_initial_gain(graph, vertices, i);
+            add_to_bucket(bs, i, vertices[i].gain);
+            vertices[i].locked = false;
+        }
+
+        int current_cut = 0;
+        for (int i = 0; i < graph->num_vertices; i++) {
+            Node* temp = graph->adj_lists[i];
+            while (temp) {
+                if (vertices[i].partition != vertices[temp->vertex].partition) {
+                    current_cut++;
+                }
+                temp = temp->next;
+            }
+        }
+        current_cut /= 2;
+
+        int accumulated_gain = 0;
+        int* temp_partition = (int*)malloc(graph->num_vertices * sizeof(int));
+        memcpy(temp_partition, vertices, graph->num_vertices * sizeof(Vertex));
+
+        while (true) {
+            int v = get_max_gain_vertex(bs);
+            if (v == -1 || vertices[v].gain <= 0) break;
+
+            // Wykonaj ruch
+            vertices[v].locked = true;
+            int old_partition = vertices[v].partition;
+            int new_partition = (old_partition + 1) % num_partitions;
+            vertices[v].partition = new_partition;
+            
+            // Aktualizuj sąsiadów
+            update_neighbor_gains(graph, vertices, bs, v);
+            
+            // Aktualizuj liczbę przecięć
+            current_cut -= vertices[v].gain;
+            accumulated_gain += vertices[v].gain;
+
+            if (current_cut < best_cut) {
+                best_cut = current_cut;
+                memcpy(best_partition, vertices, graph->num_vertices * sizeof(Vertex));
+            }
+        }
+
+        // Przywróć najlepszy podział
+        memcpy(vertices, best_partition, graph->num_vertices * sizeof(Vertex));
+        
+        // Zwolnij pamięć
+        free(bs->bucket_sizes);
+        for (int i = 0; i < 2 * max_degree + 1; i++) {
+            free(bs->buckets[i]);
+        }
+        free(bs->buckets);
+        free(bs->vertex_bucket);
+        free(bs);
+        free(temp_partition);
+
+        if (accumulated_gain <= 0) break;
+    }
+
+    // Zapisz wynik
+    printf("Najlepszy podział (przecięte krawędzie: %d):\n", best_cut);
+    for (int i = 0; i < num_partitions; i++) {
+        printf("Partycja %d: ", i);
+        for (int j = 0; j < graph->num_vertices; j++) {
+            if (vertices[j].partition == i) {
+                printf("%d ", j);
+            }
+        }
+        printf("\n");
+    }
+
+    free(vertices);
+    free(best_partition);
+}
