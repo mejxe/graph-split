@@ -22,10 +22,5 @@ Graph* initGraph(int n);
 void addEdge(Graph* g, int src, int dest);
 void freeGraph(Graph* g);
 
-// Partitioning functions
-bool** allocateFinalPartitions(int k, int n);
-void freeFinalPartitions(bool** partitions, int k);
-void kWayPartition(Graph* g, int k, bool** finalPartitions, double earlyStopThreshold, double balanceMargin);
-int calculateTotalCutSize(Graph* g, bool** partitions, int k);
 
 #endif /* GRAPH_H */
