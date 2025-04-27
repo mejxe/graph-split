@@ -5,6 +5,11 @@
 #include <time.h>
 #include "graph.h"
 
+
+
+
+
+
 // Core graph functions
 Graph* initGraph(int n) {
     Graph* g = (Graph*)malloc(sizeof(Graph));
@@ -66,4 +71,5 @@ void freeGraph(Graph* g) {
     free(g->adjList); free(g->adjMatrix);
     free(g->totalEdgeWeights); free(g);
 }
+
 

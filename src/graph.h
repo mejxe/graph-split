@@ -4,6 +4,8 @@
 
 #include <stdbool.h>
 
+
+
 // Edge structure for adjacency list representation
 typedef struct Edge {
     int dest;
