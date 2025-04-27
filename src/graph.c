@@ -11,7 +11,7 @@
 
 
 
-// Core graph functions
+
 Graph* initGraph(int n) {
     Graph* g = (Graph*)malloc(sizeof(Graph));
     if (!g) { fprintf(stderr, "Memory allocation failed\n"); exit(1); }
