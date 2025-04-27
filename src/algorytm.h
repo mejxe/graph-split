@@ -1,4 +1,5 @@
 #include "graph.h"
+
 // Partitioning functions
 bool** allocateFinalPartitions(int k, int n);
 void freeFinalPartitions(bool** partitions, int k);
