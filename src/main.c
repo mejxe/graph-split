@@ -21,6 +21,7 @@ int main(int argc, char **argv) {
   int *groups = malloc(sizeof(int) * LINE_BUFFER_SIZE);
   int *first_group_indexes = malloc(sizeof(int) * LINE_BUFFER_SIZE);
 
+<<<<<<< HEAD
   int indexes_count = 0;
   int first_nodes_indexes_count = 0;
   int groups_count = 0;
@@ -43,6 +44,45 @@ int main(int argc, char **argv) {
       stop = groups_count;
     } else {
       stop = first_group_indexes[i + 1];
+=======
+    char* indexes_buffer = malloc(BUFFER_SIZE );
+    char* first_nodes_indexes_buffer = malloc(BUFFER_SIZE );
+    char* groups_buffer = malloc(BUFFER_SIZE );
+    char* first_group_indexes_buffer = malloc(BUFFER_SIZE );
+    read_file("graf.csrrg",&max_count,indexes_buffer,first_nodes_indexes_buffer,groups_buffer,first_group_indexes_buffer);
+    
+
+
+    int* indexes = malloc(sizeof(int) * BUFFER_SIZE);
+    int* first_nodes_indexes = malloc(sizeof(int) * BUFFER_SIZE);
+    int* groups = malloc(sizeof(int) * BUFFER_SIZE);
+    int* first_group_indexes = malloc(sizeof(int) * BUFFER_SIZE);
+
+    int indexes_count = 0;
+    int first_nodes_indexes_count = 0;
+    int groups_count = 0;
+    int first_group_indexes_count = 0;
+    
+    buffer_to_int_array(indexes_buffer,indexes,BUFFER_SIZE,&indexes_count);
+    buffer_to_int_array(first_nodes_indexes_buffer,first_nodes_indexes,BUFFER_SIZE,&first_nodes_indexes_count);
+    buffer_to_int_array(groups_buffer,groups,BUFFER_SIZE,&groups_count);
+    buffer_to_int_array(first_group_indexes_buffer,first_group_indexes,BUFFER_SIZE,&first_group_indexes_count);
+    
+
+    free(indexes_buffer);
+    free(first_group_indexes);
+    free(groups_buffer);
+    free(first_group_indexes_buffer);
+    
+
+
+
+
+
+
+    for(int i =0; i < indexes_count; i++){
+        printf("%d ", indexes[i]);
+>>>>>>> origin
     }
     while (j < stop) {
       addEdge(g, groups[start], groups[j]);
