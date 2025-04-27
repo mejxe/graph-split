@@ -16,7 +16,7 @@ int main(int argc, char **argv) {
   char *first_nodes_indexes_buffer = malloc(LINE_BUFFER_SIZE);
   char *groups_buffer = malloc(LINE_BUFFER_SIZE);
   char *first_group_indexes_buffer = malloc(LINE_BUFFER_SIZE);
-  read_file("graf.csrrg", &max_count, indexes_buffer,
+  read_file("graf1.csrrg", &max_count, indexes_buffer,
             first_nodes_indexes_buffer, groups_buffer,
             first_group_indexes_buffer);
 
@@ -55,15 +55,15 @@ int main(int argc, char **argv) {
     }
     printf("\n\n");
   }
-  //      fm_algorithm(g);
-  //
-  //    printf("Final partition:\n");
-  //    for (int i = 0; i < g->vertex_count; i++) {
-  //        printf("%s: %s\n", g->vertices[i]->name, g->partition[i] ? "Right" :
-  //        "Left");
-  //    }
-  //
-  //    free_graph(g);
+        fm_algorithm(g);
+  
+      printf("Final partition:\n");
+      for (int i = 0; i < g->vertex_count; i++) {
+          printf("%s: %s\n", g->vertices[i]->name, g->partition[i] ? "Right" :
+          "Left");
+      }
+  
+      free_graph(g);
   return 0;
 
   // printf("first group index count: %d\n", first_group_indexes_count);
