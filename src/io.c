@@ -11,7 +11,7 @@ void help() {
     printf("Przykładowe wywołanie programu:./graph_split −−input graf.csrg −−parts 3 −−margin 5 −−output wynik.txt −−format txt");
 }
 // Parsowanie argumentów wejściowych
-int parse_args(int argc, char** argv, char **input_file, char **output_file, int *parts, int *margin, char **format) {
+int parseArgs(int argc, char** argv, char **input_file, char **output_file, int *parts, int *margin, char **format) {
      *parts = 2;
      *margin = 10;
      *format = "txt";
@@ -59,7 +59,7 @@ int parse_args(int argc, char** argv, char **input_file, char **output_file, int
     return 0;
 }
 
-void read_file(char* filename, int* max_count, char* indexes, char* first_nodes_indexes, char* groups, char* first_group_indexes){
+void readFile(char* filename, int* max_count, char* indexes, char* first_nodes_indexes, char* groups, char* first_group_indexes){
     FILE* file = fopen(filename,"r");
     if( file == NULL) {
         perror("Błąd: Nie udało się otworzyć podanego pliku ");
@@ -112,7 +112,7 @@ void read_file(char* filename, int* max_count, char* indexes, char* first_nodes_
 }
 
 
-void buffer_to_int_array (char* src, int* dest ,int size, int* copied_count){
+void bufferToIntArray (char* src, int* dest ,int size, int* copied_count){
     char* t = src;
     int index = 0;
     while(*t){

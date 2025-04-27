@@ -6,13 +6,25 @@
 #include <unistd.h>
 
 int main(int argc, char **argv) {
+
+
+char** inputFile = (char**)malloc(sizeof(char*)*64);
+char** outputFile = (char**)malloc(sizeof(char*)*64);
+int* parts = malloc(sizeof(int));
+int* margin = malloc(sizeof(int));
+char** format = (char**)malloc(sizeof(char*)*64);
+
+  parseArgs(argc,argv,inputFile, outputFile,parts,margin,format);
+
+
+
   int max_count = 0;
 
   char *indexes_buffer = malloc(LINE_BUFFER_SIZE);
   char *first_nodes_indexes_buffer = malloc(LINE_BUFFER_SIZE);
   char *groups_buffer = malloc(LINE_BUFFER_SIZE);
   char *first_group_indexes_buffer = malloc(LINE_BUFFER_SIZE);
-  read_file("graf1.csrrg", &max_count, indexes_buffer,
+  readFile(*inputFile, &max_count, indexes_buffer,
             first_nodes_indexes_buffer, groups_buffer,
             first_group_indexes_buffer);
 
@@ -26,12 +38,12 @@ int main(int argc, char **argv) {
   int groups_count = 0;
   int first_group_indexes_count = 0;
 
-  buffer_to_int_array(indexes_buffer, indexes, LINE_BUFFER_SIZE,
+  bufferToIntArray(indexes_buffer, indexes, LINE_BUFFER_SIZE,
                       &indexes_count);
-  buffer_to_int_array(first_nodes_indexes_buffer, first_nodes_indexes,
+  bufferToIntArray(first_nodes_indexes_buffer, first_nodes_indexes,
                       LINE_BUFFER_SIZE, &first_nodes_indexes_count);
-  buffer_to_int_array(groups_buffer, groups, LINE_BUFFER_SIZE, &groups_count);
-  buffer_to_int_array(first_group_indexes_buffer, first_group_indexes,
+  bufferToIntArray(groups_buffer, groups, LINE_BUFFER_SIZE, &groups_count);
+  bufferToIntArray(first_group_indexes_buffer, first_group_indexes,
                       LINE_BUFFER_SIZE, &first_group_indexes_count);
   int n = indexes_count;
   Graph *g = initGraph(n);
@@ -50,26 +62,28 @@ int main(int argc, char **argv) {
     }
   }
   // Create k partitions
-  int k = 10;
+  int k = *parts;
   bool **partition = allocateFinalPartitions(k, g->vertices);
 
   // Run k-way partitioning
-  kWayPartition(g, k, partition, 0.5,0.1); // Using 0.5% as early stop threshold
+  kWayPartition(g, k, partition, 0.5,*margin); // Using 0.5% as early stop threshold
 
   // Calculate final cut size
   int cutSize = calculateTotalCutSize(g, partition, k);
   printf("Total cut size for %d-way partitioning: %d\n", k, cutSize);
 
-  // Free memory when done
 
-  // Run the optimized algorithm
-  printf("Running Kernighan-Lin algorithm on sample graph...\n");
+  if(strcmp(*format,"txt")== 0){
+     saveKWayPartitionTGF(*outputFile,g,partition,k,*inputFile);
+  } 
+  else if(strcmp(*format,"bin")== 0){
+    saveKWayPartitionBinary(*outputFile,g,partition,k,*inputFile);
+  }   
 
-      // savePartitionBinary("bintest",g,partition);
-      //savePartitionTGF("test.tgf",g,partition);
-
-      saveKWayPartitionTGF("test.tgf",g,partition,k,"graf.csrrg");
-      freeGraph(g);
+  
+  
+  
+  freeGraph(g);
   free(indexes_buffer);
   free(first_nodes_indexes_buffer);
   free(groups_buffer);
@@ -79,11 +93,13 @@ int main(int argc, char **argv) {
   free(groups);
   free(first_group_indexes);
 
-  // printf("first group index count: %d\n", first_group_indexes_count);
-  // printf("index count: %d\n", indexes_count);
-  // printf("first nodes index count: %d\n", first_nodes_indexes_count);
-  // printf(" group  count: %d\n", groups_count);
-  // printf(" max  count: %d\n", max_count);
+
+  free(inputFile);
+  free(outputFile);
+  free(parts);
+  free(margin);
+  free(format);
+
 
   printf("\n");
 }

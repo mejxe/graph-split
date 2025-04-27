@@ -1,6 +1,6 @@
 all:
-	gcc  -Wall -lm --debug --pedantic src/*.c -o bin/graph_split -O3
-	./bin/graph_split
+	gcc  -Wall -lm --debug --pedantic src/*.c -o bin/graph_split  -Ofast  
+	./bin/graph_split  -i graf.csrrg -p 5 -m 5 -o wynik  
 
 test_cmd:
 	gcc  -Wall --pedantic src/io.c src/io.h tests/test.c -o bin/tests/test_split
