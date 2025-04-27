@@ -1,3 +1,4 @@
+
 #ifndef GRAPH_H
 #define GRAPH_H
 
@@ -21,5 +22,5 @@ typedef struct {
 Graph* initGraph(int n);
 void addEdge(Graph* g, int src, int dest);
 void freeGraph(Graph* g);
-
 #endif /* GRAPH_H */
+

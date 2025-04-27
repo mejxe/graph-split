@@ -4,7 +4,7 @@
 #include <string.h>
 #include <ctype.h>
 #include "graph.h"
-#define LINE_BUFFER_SIZE (1024*2000)
+
 // informacje o programie
 void help();
 
