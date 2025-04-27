@@ -1,5 +1,5 @@
 all:
-	gcc  -Wall --pedantic src/*.c -o bin/graph_split
+	gcc  -Wall -lm --debug --pedantic src/*.c -o bin/graph_split
 	./bin/graph_split
 
 test_cmd:
