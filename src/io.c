@@ -1,7 +1,4 @@
 #include "io.h"
-
-
-
 void help() {
     printf("Narzędzie służące do dzielenia grafu na n części.\n");
     printf("---------------------------------------------------");
