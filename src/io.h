@@ -19,3 +19,7 @@ void buffer_to_int_array (char* src, int* dest ,int size,int* copied_count);
 
 // funkcja outputująca do pliku, w formacie TGF (Trival Graph Format)
 void output(char* filename, Graph* split_graph);
+
+
+void saveKWayPartitionTGF(const char *filename, Graph *graph, bool **partitions, int k, const char *input_filename);
+void saveKWayPartitionBinary(const char *filename, Graph *graph, bool **partitions, int k, const char *input_filename);

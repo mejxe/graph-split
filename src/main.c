@@ -49,7 +49,7 @@ int main(int argc, char **argv) {
     }
   }
   // Create k partitions
-  int k = 2;
+  int k = 10;
   bool **partition = allocateFinalPartitions(k, g->vertices);
 
   // Run k-way partitioning
@@ -65,8 +65,9 @@ int main(int argc, char **argv) {
   printf("Running Kernighan-Lin algorithm on sample graph...\n");
 
       // savePartitionBinary("bintest",g,partition);
-      // savePartitionTGF("test.tgf",g,partition);
+      //savePartitionTGF("test.tgf",g,partition);
 
+      saveKWayPartitionTGF("test.tgf",g,partition,k,"graf.csrrg");
       freeGraph(g);
   free(indexes_buffer);
   free(first_nodes_indexes_buffer);

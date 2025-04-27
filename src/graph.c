@@ -6,6 +6,11 @@
 #include <time.h>
 #include "graph.h"
 
+
+
+
+
+
 // Core graph functions
 Graph* initGraph(int n) {
     Graph* g = (Graph*)malloc(sizeof(Graph));
@@ -81,6 +86,7 @@ static int calculateCutSize(Graph* g, bool* partition) {
         }
     }
     return cutSize;
+
 }
 
 static void fastKL(Graph* g, bool* partition, double earlyStopThreshold) {
@@ -162,6 +168,7 @@ static void fastKL(Graph* g, bool* partition, double earlyStopThreshold) {
             // Sort candidates periodically
             if (swapsTried % 10 == 1 || n < 10000) {
                 // Sort partA candidates by gain
+
                 for (int i = 0; i < maxCandidates && i < activeSizeA; i++) {
                     int maxIdx = i;
                     for (int j = i+1; j < activeSizeA; j++)
@@ -172,6 +179,16 @@ static void fastKL(Graph* g, bool* partition, double earlyStopThreshold) {
                         activeA[maxIdx] = tv; gainA[maxIdx] = tg;
                     }
                 }
+
+
+
+
+
+
+
+
+
+
                 
                 // Sort partB candidates by gain
                 for (int i = 0; i < maxCandidates && i < activeSizeB; i++) {
@@ -312,6 +329,8 @@ static void fastKL(Graph* g, bool* partition, double earlyStopThreshold) {
             int improvement = currentCutSize - newCutSize;
         printf("Pass %d: Improved by %d edges\n", passCount, improvement);
             
+      
+
             // Track improvement history
             improvementHistory[historyIndex] = improvement;
             historyIndex = (historyIndex + 1) % 3;
