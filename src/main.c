@@ -1,5 +1,6 @@
 #include "graph.h"
 #include "io.h"
+#include "algorytm.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
