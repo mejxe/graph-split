@@ -1,3 +1,4 @@
+
 #ifndef GRAPH_H
 #define GRAPH_H
 
@@ -24,3 +25,4 @@ void freeGraph(Graph* g);
 
 
 #endif /* GRAPH_H */
+
